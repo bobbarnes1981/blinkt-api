@@ -33,6 +33,9 @@ class BlinktController(threading.Thread):
            "blue": Colour(0, 0, 255),
            "purple": Colour(128, 0, 128),
            "pink": Colour(255, 0, 255),
+           "yellow": Colour(255, 255, 0),
+           "aqua": Colour(0, 255, 255),
+           "orange": Colour(255, 165, 0),
         }
         self.modes = [
             'on',
@@ -91,5 +94,6 @@ class Colour(object):
         self.b = b
 
 controller = BlinktController()
+controller.daemon = True
 controller.start()
 

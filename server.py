@@ -31,7 +31,13 @@ class BlinktController(threading.Thread):
            "red": Colour(255, 0, 0),
            "green": Colour(0, 255, 0),
            "blue": Colour(0, 0, 255),
+           "purple": Colour(128, 0, 128),
+           "pink": Colour(255, 0, 255),
         }
+        self.modes = [
+            'on',
+            'off',
+        ]
         blinkt.set_clear_on_exit()
         blinkt.set_brightness(1.0)
 
@@ -48,10 +54,14 @@ class BlinktController(threading.Thread):
             time.sleep(0.1)
 
     def set_power(self, mode):
-        self.mode = mode
+        if mode in self.modes:
+            self.mode = mode
 
     def set_colour(self, colour):
-        self.colour = colour
+        if colour in self.colours.keys():
+            if self.mode == 'off':
+                self.mode = 'on'
+            self.colour = colour
 
     def show_rainbow(self):
         hue = int(time.time() * 10) % 360
@@ -62,8 +72,11 @@ class BlinktController(threading.Thread):
         blinkt.show()
 
     def show_colour(self, colour):
-        c = self.get_colour(colour)
-        blinkt.set_pixel(self.pixel, c.r, c.g, c.b)
+        if colour in self.colours.keys():
+            c = self.get_colour(colour)
+            blinkt.set_pixel(self.pixel, c.r, c.g, c.b)
+        else:
+            blinkt.clear()
         blinkt.show()
 
     def get_colour(self, colour):

@@ -2,48 +2,55 @@ import colorsys
 
 import datetime
 import time
+import threading
 
 import blinkt
 
 from flask import Flask
 app = Flask(__name__)
 
-@app.route("/api/power/<mode>")
+@app.route("/api/power/<mode>", methods=['POST'])
 def power(mode):
+    controller.set_power(mode)
     return "power mode {0}".format(mode)
 
-@app.route("/api/colour/<colour>")
+@app.route("/api/colour/<colour>", methods=['POST'])
 def colour(colour):
+    controller.set_colour(colour)
     return "colour is {0}".format(colour)
 
-class BlinktController(object):
+class BlinktController(threading.Thread):
 
     def __init__(self):
+        threading.Thread.__init__(self)
         self.running = True
         self.pixel = 3
         self.colour = "rainbow"
         self.mode = "off"
         self.colours = {
-           "red": Colour(255, 0, 0) 
+           "red": Colour(255, 0, 0),
+           "green": Colour(0, 255, 0),
+           "blue": Colour(0, 0, 255),
         }
         blinkt.set_clear_on_exit()
         blinkt.set_brightness(1.0)
-        print('init blinkt')
 
     def run(self):
-        print('run')
         while self.running:
             if self.mode == "on":
                 if self.colour == "rainbow":
                     self.show_rainbow()
                 else:
                     self.show_colour(self.colour)
+            else:
+                blinkt.clear()
+                blinkt.show()
             time.sleep(0.1)
 
-    def power(self, mode):
+    def set_power(self, mode):
         self.mode = mode
 
-    def colour(self, colour):
+    def set_colour(self, colour):
         self.colour = colour
 
     def show_rainbow(self):
@@ -71,4 +78,5 @@ class Colour(object):
         self.b = b
 
 controller = BlinktController()
+controller.start()
 

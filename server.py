@@ -61,7 +61,7 @@ class BlinktController(threading.Thread):
             self.mode = mode
 
     def set_colour(self, colour):
-        if colour in self.colours.keys():
+        if colour in self.colours.keys() or colour == 'rainbow':
             if self.mode == 'off':
                 self.mode = 'on'
             self.colour = colour

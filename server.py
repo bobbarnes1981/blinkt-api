@@ -14,9 +14,19 @@ def power(mode):
     controller.set_power(mode)
     return "power mode {0}".format(mode)
 
+@app.route("/api/power", methods=['GET'])
+def power():
+    mode = controller.get_power()
+    return "power mode {0}".format(mode)
+
 @app.route("/api/colour/<colour>", methods=['POST'])
 def colour(colour):
     controller.set_colour(colour)
+    return "colour is {0}".format(colour)
+
+@app.route("/api/colour", methods=['GET'])
+def colour():
+    colour = controller.get_colour()
     return "colour is {0}".format(colour)
 
 class BlinktController(threading.Thread):
@@ -60,11 +70,17 @@ class BlinktController(threading.Thread):
         if mode in self.modes:
             self.mode = mode
 
+    def get_power(self):
+        return self.mode
+
     def set_colour(self, colour):
         if colour in self.colours.keys() or colour == 'rainbow':
             if self.mode == 'off':
                 self.mode = 'on'
             self.colour = colour
+
+    def get_colour(self):
+        return self.colour
 
     def show_rainbow(self):
         hue = int(time.time() * 10) % 360
